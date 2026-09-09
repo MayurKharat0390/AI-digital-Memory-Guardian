@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AI Digital Memory Guardian</title>
-  <meta name="description" content="Personal AI memory retrieval system powered by semantic search and Claude." />
+  <meta name="description" content="Local-first personal memory retrieval system powered by semantic vector search and intelligent RAG synthesis." />
 
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -14,8 +14,8 @@
       theme: {
         extend: {
           colors: {
-            surface: '#0d0d18',
-            panel:   '#12121f',
+            surface: '#0a0a14',
+            panel:   '#10101f',
             border:  'rgba(255,255,255,0.07)',
             accent:  '#8b5cf6',
           },
@@ -38,7 +38,7 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      background: #07070f;
+      background: #06060c;
       color: #e2e8f0;
       font-family: 'Inter', system-ui, sans-serif;
       font-size: 14px;
@@ -49,61 +49,89 @@
       overflow: hidden;
     }
 
-    /* ── Top nav ──────────────────────────────────────────────────────── */
+    /* ── Top Navigation ───────────────────────────────────────────────── */
     .topnav {
-      height: 52px;
+      height: 54px;
       background: #0d0d18;
       border-bottom: 1px solid rgba(255,255,255,0.06);
       display: flex;
       align-items: center;
       padding: 0 20px;
-      gap: 12px;
+      gap: 16px;
       flex-shrink: 0;
       position: relative;
-      z-index: 10;
+      z-index: 20;
     }
 
     .logo {
       display: flex;
       align-items: center;
-      gap: 9px;
+      gap: 10px;
       font-weight: 600;
       font-size: 15px;
-      color: #f1f5f9;
+      color: #f8fafc;
       letter-spacing: -0.3px;
       text-decoration: none;
     }
 
-    .logo-icon {
-      width: 28px;
-      height: 28px;
-      background: linear-gradient(135deg, #8b5cf6, #ec4899);
+    .logo-badge {
+      width: 30px;
+      height: 30px;
+      background: linear-gradient(135deg, #7c3aed, #4f46e5);
       border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 15px;
+      color: #ffffff;
+      box-shadow: 0 0 12px rgba(124,58,237,0.35);
       flex-shrink: 0;
     }
 
     .nav-spacer { flex: 1; }
+
+    .system-status-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 20px;
+      font-size: 11.5px;
+      color: #94a3b8;
+    }
+
+    .pulse-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 8px #10b981;
+      display: inline-block;
+    }
 
     .stat-pill {
       display: flex;
       align-items: center;
       gap: 6px;
       padding: 4px 12px;
-      background: rgba(139,92,246,0.1);
+      background: rgba(139,92,246,0.08);
       border: 1px solid rgba(139,92,246,0.2);
       border-radius: 20px;
       font-size: 12px;
-      color: #a78bfa;
+      color: #c4b5fd;
       font-weight: 500;
     }
 
-    .stat-pill span { color: #f1f5f9; font-weight: 600; }
+    .stat-pill span { color: #f8fafc; font-weight: 600; }
 
-    /* ── Layout ───────────────────────────────────────────────────────── */
+    /* ── App Layout ───────────────────────────────────────────────────── */
     .app-body {
       display: flex;
       flex: 1;
@@ -112,8 +140,8 @@
 
     /* ── Sidebar ──────────────────────────────────────────────────────── */
     .sidebar {
-      width: 220px;
-      background: #0d0d18;
+      width: 236px;
+      background: #0a0a14;
       border-right: 1px solid rgba(255,255,255,0.06);
       display: flex;
       flex-direction: column;
@@ -124,24 +152,23 @@
     }
 
     .sidebar-section {
-      font-size: 10px;
+      font-size: 10.5px;
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.8px;
       color: #475569;
-      padding: 8px 8px 4px;
-      margin-top: 8px;
+      padding: 10px 8px 4px;
     }
 
     .tab-btn {
       display: flex;
       align-items: center;
       gap: 10px;
-      padding: 8px 10px;
+      padding: 8.5px 12px;
       border-radius: 8px;
       cursor: pointer;
       font-size: 13.5px;
-      font-weight: 450;
+      font-weight: 500;
       color: #94a3b8;
       transition: all 0.15s ease;
       border: none;
@@ -150,36 +177,46 @@
       text-align: left;
     }
 
-    .tab-btn:hover { background: rgba(255,255,255,0.04); color: #e2e8f0; }
+    .tab-btn:hover { background: rgba(255,255,255,0.04); color: #f1f5f9; }
 
     .tab-btn.active {
       background: rgba(139,92,246,0.12);
       color: #c4b5fd;
-      font-weight: 500;
+      font-weight: 600;
     }
 
-    .tab-icon { font-size: 15px; width: 20px; text-align: center; }
+    .tab-btn.active svg { color: #a78bfa; }
 
-    /* ── API key section in sidebar ───────────────────────────────────── */
+    .tab-icon {
+      width: 18px;
+      height: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #64748b;
+      flex-shrink: 0;
+    }
+
+    /* ── Sidebar Config ───────────────────────────────────────────────── */
     .sidebar-config {
       margin-top: auto;
       padding-top: 16px;
       border-top: 1px solid rgba(255,255,255,0.06);
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 10px;
     }
 
     .config-label {
       font-size: 11px;
       font-weight: 500;
       color: #64748b;
-      margin-bottom: 2px;
+      margin-bottom: 3px;
     }
 
-    .config-input {
+    .config-input, .config-select {
       width: 100%;
-      background: rgba(255,255,255,0.04);
+      background: rgba(255,255,255,0.03);
       border: 1px solid rgba(255,255,255,0.08);
       border-radius: 7px;
       padding: 7px 10px;
@@ -187,27 +224,15 @@
       color: #e2e8f0;
       outline: none;
       transition: border-color 0.15s;
-      font-family: 'JetBrains Mono', monospace;
     }
 
-    .config-input:focus { border-color: rgba(139,92,246,0.5); }
-
-    .config-select {
-      width: 100%;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 7px;
-      padding: 7px 10px;
-      font-size: 12px;
-      color: #e2e8f0;
-      outline: none;
-      cursor: pointer;
-    }
+    .config-input { font-family: 'JetBrains Mono', monospace; }
+    .config-input:focus, .config-select:focus { border-color: rgba(139,92,246,0.5); }
 
     .btn-save {
       padding: 6px 12px;
-      background: rgba(139,92,246,0.2);
-      border: 1px solid rgba(139,92,246,0.3);
+      background: rgba(139,92,246,0.15);
+      border: 1px solid rgba(139,92,246,0.25);
       border-radius: 6px;
       color: #c4b5fd;
       font-size: 12px;
@@ -217,84 +242,101 @@
       align-self: flex-end;
     }
 
-    .btn-save:hover { background: rgba(139,92,246,0.3); }
+    .btn-save:hover { background: rgba(139,92,246,0.25); }
 
-    /* ── Main content ─────────────────────────────────────────────────── */
+    /* ── Main Content Area ────────────────────────────────────────────── */
     .main-content {
       flex: 1;
       overflow-y: auto;
-      padding: 28px 32px;
+      padding: 28px 36px;
+      background: #06060c;
     }
 
     .tab-panel { display: none; }
-    .tab-panel:not(.hidden) { display: block; }
+    .tab-panel:not(.hidden) { display: block; animation: fadeUp 0.18s ease; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(5px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .panel-header {
+      margin-bottom: 24px;
+    }
 
     .panel-title {
       font-size: 20px;
       font-weight: 650;
-      color: #f1f5f9;
+      color: #f8fafc;
       letter-spacing: -0.4px;
       margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
     .panel-sub {
       font-size: 13px;
       color: #64748b;
-      margin-bottom: 24px;
-    }
-
-    /* ── Cards ────────────────────────────────────────────────────────── */
-    .card {
-      background: #0d0d18;
-      border: 1px solid rgba(255,255,255,0.07);
-      border-radius: 12px;
-      padding: 20px;
-      margin-bottom: 16px;
     }
 
     /* ── Dropzone ─────────────────────────────────────────────────────── */
     #dropzone {
       border: 1.5px dashed rgba(139,92,246,0.3);
       border-radius: 12px;
-      padding: 36px 24px;
+      padding: 38px 24px;
       text-align: center;
       cursor: pointer;
       transition: all 0.2s;
-      background: rgba(139,92,246,0.03);
+      background: rgba(139,92,246,0.02);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
     }
 
     #dropzone:hover, #dropzone.dragover {
       border-color: rgba(139,92,246,0.7);
-      background: rgba(139,92,246,0.07);
+      background: rgba(139,92,246,0.06);
     }
 
-    .dropzone-icon { font-size: 32px; margin-bottom: 8px; }
+    .dropzone-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: rgba(139,92,246,0.1);
+      color: #a78bfa;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 12px;
+    }
 
     .dropzone-text {
       font-size: 14px;
-      font-weight: 500;
-      color: #cbd5e1;
+      font-weight: 550;
+      color: #e2e8f0;
       margin-bottom: 4px;
     }
 
     .dropzone-hint { font-size: 12px; color: #475569; }
 
     .btn-file-pick {
-      margin-top: 12px;
-      padding: 8px 18px;
-      background: rgba(139,92,246,0.15);
+      margin-top: 14px;
+      padding: 7px 16px;
+      background: rgba(139,92,246,0.12);
       border: 1px solid rgba(139,92,246,0.25);
       border-radius: 7px;
       color: #c4b5fd;
-      font-size: 13px;
+      font-size: 12.5px;
       font-weight: 500;
       cursor: pointer;
       transition: all 0.15s;
     }
 
-    .btn-file-pick:hover { background: rgba(139,92,246,0.25); }
+    .btn-file-pick:hover { background: rgba(139,92,246,0.22); }
 
-    /* ── File list ────────────────────────────────────────────────────── */
+    /* ── File List ────────────────────────────────────────────────────── */
     #file-list {
       display: flex;
       flex-direction: column;
@@ -307,7 +349,7 @@
       justify-content: space-between;
       align-items: center;
       padding: 9px 14px;
-      background: rgba(139,92,246,0.06);
+      background: rgba(139,92,246,0.05);
       border: 1px solid rgba(139,92,246,0.15);
       border-radius: 8px;
       font-size: 13px;
@@ -320,8 +362,8 @@
     .btn {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      padding: 9px 20px;
+      gap: 7px;
+      padding: 9px 18px;
       border-radius: 8px;
       font-size: 13.5px;
       font-weight: 550;
@@ -332,40 +374,44 @@
     }
 
     .btn-primary {
-      background: linear-gradient(135deg, #7c3aed, #9333ea);
-      color: #fff;
-      box-shadow: 0 0 20px rgba(124,58,237,0.25);
+      background: linear-gradient(135deg, #7c3aed, #6366f1);
+      color: #ffffff;
+      box-shadow: 0 0 16px rgba(124,58,237,0.25);
     }
 
-    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 24px rgba(124,58,237,0.35); }
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 20px rgba(124,58,237,0.35);
+    }
+
     .btn-primary:active { transform: translateY(0); }
     .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
     .btn-secondary {
-      background: rgba(255,255,255,0.06);
+      background: rgba(255,255,255,0.05);
       color: #94a3b8;
       border: 1px solid rgba(255,255,255,0.08);
     }
 
-    .btn-secondary:hover { background: rgba(255,255,255,0.1); color: #e2e8f0; }
+    .btn-secondary:hover { background: rgba(255,255,255,0.08); color: #e2e8f0; }
 
     .btn-danger {
-      background: rgba(239,68,68,0.1);
+      background: rgba(239,68,68,0.08);
       color: #f87171;
       border: 1px solid rgba(239,68,68,0.2);
     }
 
-    .btn-danger:hover { background: rgba(239,68,68,0.18); }
-    .btn-sm { padding: 5px 12px; font-size: 12px; }
+    .btn-danger:hover { background: rgba(239,68,68,0.16); }
+    .btn-sm { padding: 5px 11px; font-size: 12px; }
 
-    /* ── Inputs ───────────────────────────────────────────────────────── */
+    /* ── Form Inputs ──────────────────────────────────────────────────── */
     .input-field {
       width: 100%;
-      background: rgba(255,255,255,0.04);
+      background: rgba(255,255,255,0.03);
       border: 1px solid rgba(255,255,255,0.08);
       border-radius: 9px;
       padding: 11px 14px;
-      font-size: 14px;
+      font-size: 13.5px;
       color: #e2e8f0;
       outline: none;
       transition: border-color 0.15s;
@@ -375,19 +421,47 @@
     .input-field:focus { border-color: rgba(139,92,246,0.5); }
     .input-field::placeholder { color: #475569; }
 
-    textarea.input-field { resize: vertical; min-height: 100px; }
+    textarea.input-field { resize: vertical; min-height: 90px; }
 
     .input-label {
       font-size: 12px;
       font-weight: 550;
       color: #94a3b8;
       margin-bottom: 6px;
-      display: block;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
-    .input-group { margin-bottom: 14px; }
+    .input-group { margin-bottom: 16px; }
 
-    /* ── Range slider ─────────────────────────────────────────────────── */
+    /* ── Quick prompt chips ───────────────────────────────────────────── */
+    .quick-prompts {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
+    .prompt-chip {
+      padding: 4px 10px;
+      border-radius: 16px;
+      font-size: 11.5px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+      color: #94a3b8;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .prompt-chip:hover {
+      background: rgba(139,92,246,0.1);
+      border-color: rgba(139,92,246,0.25);
+      color: #c4b5fd;
+    }
+
+    /* ── Range Slider ─────────────────────────────────────────────────── */
     .range-wrapper { display: flex; align-items: center; gap: 12px; }
 
     input[type=range] {
@@ -404,12 +478,12 @@
       color: #a78bfa;
     }
 
-    /* ── Progress bar ─────────────────────────────────────────────────── */
+    /* ── Progress Indicator ───────────────────────────────────────────── */
     #ingest-progress {
       margin-top: 14px;
       padding: 12px 16px;
       background: rgba(139,92,246,0.08);
-      border: 1px solid rgba(139,92,246,0.15);
+      border: 1px solid rgba(139,92,246,0.18);
       border-radius: 9px;
       font-size: 13px;
       color: #a78bfa;
@@ -430,49 +504,90 @@
 
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* ── Memory cards ─────────────────────────────────────────────────── */
+    /* ── Memory Cards ─────────────────────────────────────────────────── */
     .memory-card {
-      background: #0f0f1c;
+      background: #0c0c17;
       border: 1px solid rgba(255,255,255,0.06);
       border-left: 3px solid var(--accent, #8b5cf6);
       border-radius: 10px;
       padding: 14px 16px;
-      margin-bottom: 10px;
-      transition: border-color 0.15s;
+      margin-bottom: 12px;
+      transition: all 0.15s ease;
+      position: relative;
     }
 
-    .memory-card:hover { border-color: rgba(255,255,255,0.12); border-left-color: var(--accent, #8b5cf6); }
+    .memory-card:hover {
+      border-color: rgba(255,255,255,0.12);
+      border-left-color: var(--accent, #8b5cf6);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+    }
 
-    .card-header { margin-bottom: 10px; }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
 
-    .card-badges { display: flex; flex-wrap: wrap; gap: 6px; }
+    .card-badges {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+    }
 
     .chip {
       display: inline-flex;
       align-items: center;
-      padding: 2px 9px;
-      border-radius: 20px;
-      font-size: 11.5px;
+      gap: 4px;
+      padding: 2.5px 8px;
+      border-radius: 5px;
+      font-size: 11px;
       font-weight: 500;
-      border: 1px solid;
     }
 
     .chip-score {
-      background: transparent;
+      background: rgba(139,92,246,0.1);
+      border: 1px solid rgba(139,92,246,0.25);
       font-weight: 600;
     }
 
     .chip-source {
-      background: rgba(255,255,255,0.05);
-      border-color: rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
       color: #94a3b8;
     }
 
     .chip-dim {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.05);
+      color: #64748b;
+    }
+
+    .card-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-icon-action {
       background: transparent;
-      border-color: rgba(255,255,255,0.06);
-      color: #475569;
+      border: 1px solid rgba(255,255,255,0.08);
+      color: #64748b;
+      border-radius: 6px;
+      padding: 4px 8px;
       font-size: 11px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .btn-icon-action:hover {
+      background: rgba(255,255,255,0.06);
+      color: #cbd5e1;
+      border-color: rgba(255,255,255,0.15);
     }
 
     .card-text {
@@ -480,50 +595,53 @@
       line-height: 1.65;
       color: #cbd5e1;
       white-space: pre-wrap;
-      word-break: break-word;
     }
 
-    /* ── Answer box ───────────────────────────────────────────────────── */
+    /* ── AI Answer Box ────────────────────────────────────────────────── */
     .answer-box {
-      background: rgba(139,92,246,0.06);
-      border: 1px solid rgba(139,92,246,0.18);
+      background: linear-gradient(180deg, rgba(139,92,246,0.08) 0%, rgba(139,92,246,0.03) 100%);
+      border: 1px solid rgba(139,92,246,0.22);
       border-radius: 12px;
-      padding: 18px 20px;
-      margin-top: 20px;
+      padding: 20px 22px;
+      margin-bottom: 22px;
     }
 
     .answer-header {
       display: flex;
       align-items: center;
       gap: 8px;
-      font-size: 13px;
+      font-size: 13.5px;
       font-weight: 600;
-      color: #a78bfa;
+      color: #c4b5fd;
       margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(139,92,246,0.15);
     }
 
-    .answer-icon { font-size: 16px; }
-    .answer-model { font-size: 11px; color: #475569; font-weight: 400; }
-    .token-count { margin-left: auto; font-size: 11px; color: #475569; font-weight: 400; }
+    .answer-model { font-size: 11.5px; color: #64748b; font-weight: 400; margin-left: 4px; }
+    .token-count { margin-left: auto; font-size: 11.5px; color: #64748b; font-weight: 400; font-family: 'JetBrains Mono', monospace; }
 
     .answer-text {
-      font-size: 14px;
+      font-size: 13.5px;
       line-height: 1.75;
       color: #e2e8f0;
       white-space: pre-wrap;
     }
 
-    /* ── Results header ───────────────────────────────────────────────── */
+    /* ── Results Header ───────────────────────────────────────────────── */
     .results-title {
-      font-size: 14px;
+      font-size: 13.5px;
       font-weight: 600;
       color: #94a3b8;
       margin-bottom: 14px;
       padding-bottom: 10px;
       border-bottom: 1px solid rgba(255,255,255,0.06);
+      display: flex;
+      align-items: center;
+      gap: 7px;
     }
 
-    /* ── Compare layout ───────────────────────────────────────────────── */
+    /* ── Compare Grid ─────────────────────────────────────────────────── */
     .compare-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -531,9 +649,7 @@
       margin-top: 20px;
     }
 
-    .compare-col {
-      min-width: 0;
-    }
+    .compare-col { min-width: 0; }
 
     .col-title {
       font-size: 13px;
@@ -549,13 +665,13 @@
     .col-title-kw {
       background: rgba(245,158,11,0.08);
       color: #fbbf24;
-      border: 1px solid rgba(245,158,11,0.15);
+      border: 1px solid rgba(245,158,11,0.18);
     }
 
     .col-title-sem {
       background: rgba(139,92,246,0.08);
-      color: #a78bfa;
-      border: 1px solid rgba(139,92,246,0.15);
+      color: #c4b5fd;
+      border: 1px solid rgba(139,92,246,0.18);
     }
 
     .count-badge {
@@ -567,7 +683,7 @@
       border-radius: 10px;
     }
 
-    /* ── Library ──────────────────────────────────────────────────────── */
+    /* ── Library Panel ────────────────────────────────────────────────── */
     .lib-stats {
       display: flex;
       gap: 20px;
@@ -582,33 +698,48 @@
 
     .lib-db-path { margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: 11px; }
 
-    .library-list { display: flex; flex-direction: column; gap: 8px; }
-
     .library-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding: 12px 16px;
-      background: #0f0f1c;
+      background: #0c0c17;
       border: 1px solid rgba(255,255,255,0.06);
       border-radius: 9px;
+      margin-bottom: 8px;
       transition: border-color 0.15s;
     }
 
-    .library-row:hover { border-color: rgba(255,255,255,0.1); }
+    .library-row:hover { border-color: rgba(255,255,255,0.12); }
 
-    .lib-info { display: flex; flex-direction: column; gap: 2px; }
+    .lib-info { display: flex; flex-direction: column; gap: 3px; }
+    .lib-name { font-size: 13.5px; color: #f1f5f9; font-weight: 500; display: flex; align-items: center; gap: 6px; }
+    .lib-meta { font-size: 11.5px; color: #64748b; }
 
-    .lib-name { font-size: 13.5px; color: #e2e8f0; font-weight: 500; }
+    /* ── Callouts & Alerts ────────────────────────────────────────────── */
+    .callout {
+      padding: 12px 16px;
+      border-radius: 9px;
+      font-size: 13px;
+      line-height: 1.6;
+      margin: 16px 0;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
 
-    .lib-meta { font-size: 11.5px; color: #475569; }
+    .callout-info {
+      background: rgba(99,102,241,0.07);
+      border: 1px solid rgba(99,102,241,0.18);
+      color: #a5b4fc;
+    }
 
-    /* ── Empty / loading states ───────────────────────────────────────── */
+    /* ── Empty & Loading States ───────────────────────────────────────── */
     .empty-state {
       padding: 40px 20px;
       text-align: center;
       color: #475569;
-      font-size: 14px;
+      font-size: 13.5px;
       line-height: 1.7;
     }
 
@@ -621,31 +752,24 @@
       font-size: 13px;
     }
 
-    .hint-text { color: #475569; font-size: 12.5px; }
-    .error-text { color: #f87171; }
-
-    /* ── Divider ──────────────────────────────────────────────────────── */
-    .divider {
-      border: none;
-      border-top: 1px solid rgba(255,255,255,0.06);
-      margin: 20px 0;
-    }
+    .hint-text { color: #64748b; font-size: 12.5px; }
+    .divider { border: none; border-top: 1px solid rgba(255,255,255,0.06); margin: 20px 0; }
 
     /* ── Toast ────────────────────────────────────────────────────────── */
     #toast {
       position: fixed;
       bottom: 24px;
       right: 24px;
-      background: #1e1e2e;
+      background: #181829;
       border: 1px solid rgba(255,255,255,0.1);
       border-radius: 10px;
       padding: 10px 18px;
       font-size: 13px;
-      color: #e2e8f0;
+      color: #f1f5f9;
       display: flex;
       align-items: center;
-      gap: 8px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      gap: 9px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
       transform: translateY(20px);
       opacity: 0;
       pointer-events: none;
@@ -662,8 +786,6 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 11px;
-      font-weight: 700;
       flex-shrink: 0;
     }
 
@@ -671,36 +793,11 @@
     .toast-error   { background: rgba(239,68,68,0.15);  color: #ef4444; border: 1px solid rgba(239,68,68,0.3); }
     .toast-info    { background: rgba(139,92,246,0.15); color: #8b5cf6; border: 1px solid rgba(139,92,246,0.3); }
 
-    /* ── Scrollbar ────────────────────────────────────────────────────── */
+    /* ── Scrollbars ───────────────────────────────────────────────────── */
     ::-webkit-scrollbar { width: 5px; height: 5px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 10px; }
     ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.14); }
-
-    /* ── Tabs fade-in ─────────────────────────────────────────────────── */
-    .tab-panel {
-      animation: fadeUp 0.2s ease;
-    }
-
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(6px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    /* ── Highlight callout ────────────────────────────────────────────── */
-    .callout {
-      padding: 12px 16px;
-      border-radius: 9px;
-      font-size: 13px;
-      line-height: 1.6;
-      margin: 16px 0;
-    }
-
-    .callout-info {
-      background: rgba(59,130,246,0.07);
-      border: 1px solid rgba(59,130,246,0.15);
-      color: #93c5fd;
-    }
   </style>
 </head>
 
@@ -708,38 +805,104 @@
   <!-- ── Top Navigation ───────────────────────────────────────────────── -->
   <nav class="topnav">
     <a href="/" class="logo">
-      <div class="logo-icon">🧠</div>
-      Memory Guardian
+      <div class="logo-badge">
+        <!-- Shield Icon -->
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"/>
+        </svg>
+      </div>
+      <span>Memory Guardian</span>
     </a>
+
     <div class="nav-spacer"></div>
-    <div class="stat-pill">
-      <span id="stat-chunks">—</span> chunks &nbsp;·&nbsp; <span id="stat-docs">—</span> docs
+
+    <div class="system-status-group">
+      <div class="status-badge" title="Persistent vector database ready">
+        <span class="pulse-dot"></span>
+        <span>ChromaDB Active</span>
+      </div>
+
+      <div class="status-badge" title="Local PyTorch Sentence Transformer">
+        <svg class="w-3.5 h-3.5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 3v1.5M4.5 8.25H3m18 0h-1.5M4.5 12H3m18 0h-1.5m-15 3.75H3m18 0h-1.5M8.25 19.5V21M12 3v1.5m0 15V21m3.75-18v1.5m0 15V21m-9-1.5h10.5a2.25 2.25 0 002.25-2.25V6.75a2.25 2.25 0 00-2.25-2.25H6.75A2.25 2.25 0 004.5 6.75v10.5a2.25 2.25 0 002.25 2.25z"/>
+        </svg>
+        <span>all-MiniLM-L6-v2 (Local)</span>
+      </div>
+
+      <div class="stat-pill">
+        <span id="stat-chunks">—</span> chunks &nbsp;·&nbsp; <span id="stat-docs">—</span> docs
+      </div>
     </div>
   </nav>
 
-  <!-- ── App body ─────────────────────────────────────────────────────── -->
+  <!-- ── App Layout ───────────────────────────────────────────────────── -->
   <div class="app-body">
 
     <!-- ── Sidebar ──────────────────────────────────────────────────── -->
     <aside class="sidebar">
       <div class="sidebar-section">Navigation</div>
 
-      <button class="tab-btn" data-tab="ingest" onclick="setTab('ingest')">
-        <span class="tab-icon">📥</span> Ingest
-      </button>
-      <button class="tab-btn" data-tab="query" onclick="setTab('query')">
-        <span class="tab-icon">🔍</span> Query
-      </button>
-      <button class="tab-btn" data-tab="compare" onclick="setTab('compare')">
-        <span class="tab-icon">⚖️</span> Compare
-      </button>
-      <button class="tab-btn" data-tab="library" onclick="setTab('library')">
-        <span class="tab-icon">📚</span> Library
+      <button class="tab-btn active" data-tab="ingest" onclick="setTab('ingest')">
+        <span class="tab-icon">
+          <!-- Tray/Upload Icon -->
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/>
+          </svg>
+        </span>
+        Ingest Documents
       </button>
 
-      <!-- Config section -->
+      <button class="tab-btn" data-tab="query" onclick="setTab('query')">
+        <span class="tab-icon">
+          <!-- Search Icon -->
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/>
+          </svg>
+        </span>
+        Query Memory
+      </button>
+
+      <button class="tab-btn" data-tab="compare" onclick="setTab('compare')">
+        <span class="tab-icon">
+          <!-- Split/Compare Icon -->
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5"/>
+          </svg>
+        </span>
+        Compare Search
+      </button>
+
+      <button class="tab-btn" data-tab="library" onclick="setTab('library')">
+        <span class="tab-icon">
+          <!-- Library/Book Icon -->
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/>
+          </svg>
+        </span>
+        Memory Library
+      </button>
+
+      <!-- Config Section -->
       <div class="sidebar-config">
-        <div class="sidebar-section" style="margin-top:0; padding-top:0;">Configuration</div>
+        <div class="sidebar-section" style="padding:0;">Synthesis Engine</div>
+
+        <div>
+          <div class="config-label">Response Engine</div>
+          <select id="sidebar-engine" class="config-select" onchange="saveEngine()">
+            <option value="auto">Auto (Claude or Local Fallback)</option>
+            <option value="local">Local Extractive (Free &amp; Offline)</option>
+            <option value="claude">Claude API (Requires Key)</option>
+          </select>
+        </div>
+
+        <div>
+          <div class="config-label">Claude Model</div>
+          <select id="sidebar-model" class="config-select" onchange="saveModel()">
+            <option value="claude-3-5-haiku-20241022">Haiku 3.5 (Fast)</option>
+            <option value="claude-3-5-sonnet-20241022">Sonnet 3.5 (Balanced)</option>
+            <option value="claude-3-opus-20240229">Opus (Comprehensive)</option>
+          </select>
+        </div>
 
         <div>
           <div class="config-label">Anthropic API Key</div>
@@ -752,39 +915,41 @@
           />
         </div>
 
-        <div>
-          <div class="config-label">Model</div>
-          <select id="sidebar-model" class="config-select" onchange="saveModel()">
-            <option value="claude-3-5-haiku-20241022">Haiku (fast)</option>
-            <option value="claude-3-5-sonnet-20241022">Sonnet (balanced)</option>
-            <option value="claude-3-opus-20240229">Opus (best)</option>
-          </select>
-        </div>
+        <button class="btn-save" onclick="saveApiKey()">Save Credentials</button>
 
-        <button class="btn-save" onclick="saveApiKey()">Save Key</button>
-
-        <div style="font-size:11px; color:#334155; line-height:1.5; margin-top:4px;">
-          Embedding: <span style="color:#4b5563">all-MiniLM-L6-v2 (local)</span><br>
-          DB: <span style="color:#4b5563">ChromaDB (on-disk)</span>
+        <div style="font-size:11px; color:#475569; line-height:1.45; margin-top:2px;">
+          Vector Dim: <span style="color:#64748b">384-dimensional</span><br>
+          Storage: <span style="color:#64748b">ChromaDB on-disk</span>
         </div>
       </div>
     </aside>
 
-    <!-- ── Main content ──────────────────────────────────────────────── -->
+    <!-- ── Main Content Area ──────────────────────────────────────────── -->
     <main class="main-content">
 
       <!-- ══ INGEST PANEL ══════════════════════════════════════════════ -->
       <section id="panel-ingest" class="tab-panel">
-        <h1 class="panel-title">Ingest Documents</h1>
-        <p class="panel-sub">Upload files or paste text to add memories to your knowledge base.</p>
+        <div class="panel-header">
+          <h1 class="panel-title">
+            <svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/>
+            </svg>
+            Ingest Documents
+          </h1>
+          <p class="panel-sub">Upload notes, journal entries, or text files to index into your personal vector store.</p>
+        </div>
 
-        <!-- Drop zone -->
+        <!-- Dropzone -->
         <div id="dropzone" onclick="document.getElementById('file-input').click()">
-          <div class="dropzone-icon">📂</div>
-          <div class="dropzone-text">Drop files here or click to browse</div>
-          <div class="dropzone-hint">.txt and .md files supported · Multiple files OK</div>
+          <div class="dropzone-icon">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z"/>
+            </svg>
+          </div>
+          <div class="dropzone-text">Drag and drop files here or click to browse</div>
+          <div class="dropzone-hint">Supports .txt and .md files · Multi-file batching supported</div>
           <button class="btn-file-pick" onclick="event.stopPropagation(); document.getElementById('file-input').click()">
-            Browse Files
+            Select Files
           </button>
           <input id="file-input" type="file" accept=".txt,.md" multiple style="display:none" />
         </div>
@@ -792,18 +957,26 @@
         <!-- File list -->
         <div id="file-list"></div>
 
-        <!-- Paste text -->
+        <!-- Paste text divider -->
         <hr class="divider" />
 
         <div class="input-group">
-          <label class="input-label">Or paste text directly</label>
-          <input id="paste-name" class="input-field" placeholder="Document name (e.g. 'my-notes')" style="margin-bottom:8px" />
-          <textarea id="paste-text" class="input-field" placeholder="Paste your content here…"></textarea>
+          <label class="input-label">
+            <svg class="w-3.5 h-3.5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"/>
+            </svg>
+            Or paste text directly
+          </label>
+          <input id="paste-name" class="input-field" placeholder="Document title (e.g. 'quarterly-review')" style="margin-bottom:8px" />
+          <textarea id="paste-text" class="input-field" placeholder="Paste memory content here…"></textarea>
         </div>
 
         <!-- Ingest button -->
         <button id="btn-ingest" class="btn btn-primary" onclick="ingestFiles()">
-          ⚡ Embed &amp; Store
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"/>
+          </svg>
+          Embed &amp; Store
         </button>
 
         <!-- Progress -->
@@ -815,32 +988,61 @@
 
       <!-- ══ QUERY PANEL ════════════════════════════════════════════════ -->
       <section id="panel-query" class="tab-panel hidden">
-        <h1 class="panel-title">Query Your Memory</h1>
-        <p class="panel-sub">Ask anything about your documents using natural language.</p>
+        <div class="panel-header">
+          <h1 class="panel-title">
+            <svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/>
+            </svg>
+            Query Memory
+          </h1>
+          <p class="panel-sub">Retrieve relevant passages using semantic vector search and synthesize natural language answers.</p>
+        </div>
 
         <div class="input-group">
           <textarea
             id="query-input"
             class="input-field"
             rows="2"
-            placeholder="e.g.  When did I feel anxious and how did I cope?"
+            placeholder="Ask anything about your notes, e.g. What hiking trails did I explore?"
           ></textarea>
+
+          <!-- Quick prompts component -->
+          <div class="quick-prompts">
+            <span style="font-size:11px; color:#475569;">Quick prompts:</span>
+            <span class="prompt-chip" onclick="fillQuery('hiking in the mountains')">hiking in the mountains</span>
+            <span class="prompt-chip" onclick="fillQuery('feeling anxious or overwhelmed')">coping with anxiety</span>
+            <span class="prompt-chip" onclick="fillQuery('project deadlines and deliverables')">project milestones</span>
+            <span class="prompt-chip" onclick="fillQuery('travel destinations and favorite cafes')">travel &amp; cafes</span>
+          </div>
         </div>
 
-        <div class="input-group" style="display:flex; align-items:center; gap:16px;">
-          <label class="input-label" style="margin:0; white-space:nowrap;">Top-K results</label>
-          <div class="range-wrapper" style="flex:1">
-            <input
-              id="query-topk"
-              type="range" min="1" max="10" value="5"
-              oninput="document.getElementById('topk-val').textContent=this.value"
-            />
-            <span id="topk-val" class="range-val">5</span>
+        <!-- Controls: Top-K & Scope Filter Component -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div class="input-group" style="margin-bottom:0;">
+            <label class="input-label">Filter by Document Source</label>
+            <select id="query-source-filter" class="config-select">
+              <option value="">All Documents (Entire Library)</option>
+            </select>
+          </div>
+
+          <div class="input-group" style="margin-bottom:0;">
+            <label class="input-label">Top-K Retrieved Chunks</label>
+            <div class="range-wrapper">
+              <input
+                id="query-topk"
+                type="range" min="1" max="10" value="5"
+                oninput="document.getElementById('topk-val').textContent=this.value"
+              />
+              <span id="topk-val" class="range-val">5</span>
+            </div>
           </div>
         </div>
 
         <button id="btn-query" class="btn btn-primary" onclick="runQuery()">
-          🔍 Search Memory
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/>
+          </svg>
+          Search Memory
         </button>
 
         <div id="query-results" style="margin-top:24px;"></div>
@@ -848,15 +1050,25 @@
 
       <!-- ══ COMPARE PANEL ══════════════════════════════════════════════ -->
       <section id="panel-compare" class="tab-panel hidden">
-        <h1 class="panel-title">Compare Search Modes</h1>
-        <p class="panel-sub">
-          Run the same query through keyword matching and semantic search simultaneously.
-          See exactly why vector search outperforms string matching.
-        </p>
+        <div class="panel-header">
+          <h1 class="panel-title">
+            <svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5"/>
+            </svg>
+            Compare Search Modes
+          </h1>
+          <p class="panel-sub">
+            Observe side-by-side keyword matching vs. vector semantic search on the identical query.
+          </p>
+        </div>
 
         <div class="callout callout-info">
-          💡 Try querying <strong>"worried about the future"</strong> — keyword search returns 0 results
-          because those exact words don't appear, while semantic search finds the anxiety journal entry.
+          <svg class="w-4 h-4 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"/>
+          </svg>
+          <div>
+            Try querying <strong>"worried about the future"</strong>: Traditional keyword search fails with 0 matches if the exact wording isn't present, whereas semantic search understands context and retrieves the anxiety journal entry.
+          </div>
         </div>
 
         <div class="input-group">
@@ -864,7 +1076,7 @@
             id="compare-input"
             class="input-field"
             rows="2"
-            placeholder="e.g.  worried about the future"
+            placeholder="e.g. worried about the future"
           ></textarea>
         </div>
 
@@ -881,37 +1093,50 @@
         </div>
 
         <button id="btn-compare" class="btn btn-primary" onclick="runCompare()">
-          ⚖️ Run Comparison
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5"/>
+          </svg>
+          Run Comparison
         </button>
 
         <div class="compare-grid">
           <div class="compare-col" id="col-keyword">
             <div class="empty-state" style="padding:20px">
-              Results will appear here after you run a comparison.
+              Keyword matches will appear here.
             </div>
           </div>
           <div class="compare-col" id="col-semantic">
-            <div class="empty-state" style="padding:20px"></div>
+            <div class="empty-state" style="padding:20px">
+              Semantic matches will appear here.
+            </div>
           </div>
         </div>
       </section>
 
       <!-- ══ LIBRARY PANEL ══════════════════════════════════════════════ -->
       <section id="panel-library" class="tab-panel hidden">
-        <h1 class="panel-title">Memory Library</h1>
-        <p class="panel-sub">All documents stored in your persistent ChromaDB knowledge base.</p>
+        <div class="panel-header">
+          <h1 class="panel-title">
+            <svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/>
+            </svg>
+            Memory Library
+          </h1>
+          <p class="panel-sub">Manage indexed documents stored persistently in your local ChromaDB vector repository.</p>
+        </div>
+
         <div id="library-content">
-          <div class="empty-state">Loading…</div>
+          <div class="empty-state">Loading library…</div>
         </div>
       </section>
 
     </main>
-  </div><!-- /.app-body -->
+  </div>
 
-  <!-- ── Toast ──────────────────────────────────────────────────────── -->
+  <!-- ── Toast Notification ───────────────────────────────────────────── -->
   <div id="toast"></div>
 
-  <!-- ── JS ─────────────────────────────────────────────────────────── -->
+  <!-- ── Main JS Script ──────────────────────────────────────────────── -->
   <script src="/static/js/app.js"></script>
 </body>
 </html>

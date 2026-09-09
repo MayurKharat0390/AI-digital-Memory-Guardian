@@ -31,7 +31,7 @@ from pipeline.vector_store  import (
     list_sources, delete_source, collection_count,
 )
 from pipeline.keyword_search import keyword_search
-from pipeline.rag            import generate_answer
+from pipeline.rag            import generate_answer, generate_local_summary
 
 
 # ── Serve the SPA ─────────────────────────────────────────────────────────────
@@ -106,15 +106,17 @@ class IngestView(APIView):
 class QueryView(APIView):
     """
     POST /api/query/
-    Body: {"query": "...", "top_k": 5, "api_key": "sk-ant-...", "model": "..."}
+    Body: {"query": "...", "top_k": 5, "api_key": "sk-ant-...", "model": "...", "source_filter": "...", "engine": "auto|claude|local"}
     Returns: {"results": [...], "answer": "...", "usage": {...}}
     """
 
     def post(self, request):
-        query   = request.data.get('query', '').strip()
-        top_k   = int(request.data.get('top_k', 5))
-        api_key = request.data.get('api_key', '').strip() or os.environ.get('ANTHROPIC_API_KEY', '')
-        model   = request.data.get('model', 'claude-3-5-haiku-20241022')
+        query         = request.data.get('query', '').strip()
+        top_k         = int(request.data.get('top_k', 5))
+        api_key       = request.data.get('api_key', '').strip() or os.environ.get('ANTHROPIC_API_KEY', '')
+        model         = request.data.get('model', 'claude-3-5-haiku-20241022')
+        source_filter = request.data.get('source_filter', '').strip() or None
+        engine        = request.data.get('engine', 'auto')
 
         if not query:
             return Response({'error': 'Query is required.'}, status=status.HTTP_400_BAD_REQUEST)
@@ -126,27 +128,32 @@ class QueryView(APIView):
         embedding_model = get_model()
         q_vec = embed_query(query, model=embedding_model)
 
-        # Stage 2: Semantic search + re-ranking
-        results = semantic_search(q_vec, top_k=top_k)
+        # Stage 2: Semantic search + re-ranking (with optional source filter)
+        results = semantic_search(q_vec, top_k=top_k, source_filter=source_filter)
 
         if results:
             update_retrieval_stats([r['id'] for r in results])
 
-        # Stage 3: RAG via Claude (optional — only if API key provided)
+        # Stage 3: Synthesis (Claude or Local Extractive fallback)
         answer = None
         usage  = None
-        if api_key and results:
-            try:
-                answer, usage = generate_answer(
-                    query=query,
-                    chunks=results,
-                    api_key=api_key,
-                    model=model,
-                )
-            except Exception as e:
-                answer = f"[Claude API error: {e}]"
+        if results:
+            if engine == 'local' or not api_key:
+                answer, usage = generate_local_summary(query, results)
+            else:
+                try:
+                    answer, usage = generate_answer(
+                        query=query,
+                        chunks=results,
+                        api_key=api_key,
+                        model=model,
+                    )
+                except Exception as e:
+                    local_ans, local_usage = generate_local_summary(query, results)
+                    answer = f"*(Claude API notice: {e}. Reverted to local extractive synthesis:)*\n\n" + local_ans
+                    usage = local_usage
 
-        # Serialize (remove non-JSON-safe objects)
+        # Serialize
         serialized = [{
             'text':        r['text'],
             'source':      r['metadata'].get('source', '?'),
@@ -163,6 +170,7 @@ class QueryView(APIView):
             'results': serialized,
             'answer':  answer,
             'usage':   usage,
+            'source_filter': source_filter,
         })
 
 

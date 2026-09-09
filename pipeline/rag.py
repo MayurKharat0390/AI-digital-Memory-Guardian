@@ -113,3 +113,61 @@ def generate_answer(
     }
 
     return answer, usage_stats
+
+
+def generate_local_summary(query: str, chunks: list[dict]) -> tuple[str, dict]:
+    """
+    Generate an intelligent, offline extractive synthesis without any external API calls or credits.
+    Analyzes top retrieved chunks, extracts high-relevance sentences, and formats a coherent digest.
+    """
+    if not chunks:
+        return "No relevant memories found in your knowledge base for this query.", {
+            "model": "Local Extractive Engine (Offline / Zero Cost)",
+            "input_tokens": 0,
+            "output_tokens": 0,
+        }
+
+    import re
+    query_words = set(re.findall(r"\w+", query.lower()))
+    
+    synthesized_sections = []
+    total_sentences = 0
+
+    for i, c in enumerate(chunks[:3], 1):
+        src = c.get("metadata", {}).get("source", "Memory Document")
+        score = c.get("final_score", c.get("similarity", 0.0))
+        text = c.get("text", "").strip()
+
+        # Split into sentences
+        raw_sentences = re.split(r"(?<=[.!?])\s+", text)
+        scored_sents = []
+        for s in raw_sentences:
+            s_clean = s.strip()
+            if len(s_clean) < 15:
+                continue
+            s_words = set(re.findall(r"\w+", s_clean.lower()))
+            overlap = len(s_words.intersection(query_words))
+            scored_sents.append((overlap, s_clean))
+
+        # Pick top sentences from this chunk
+        scored_sents.sort(key=lambda x: x[0], reverse=True)
+        top_sents = [s[1] for s in scored_sents[:2]] if scored_sents else [text[:200] + "..."]
+
+        sentence_bullets = "\n".join(f"  - {s}" for s in top_sents)
+        synthesized_sections.append(
+            f"**From {src}** *(relevance {score * 100:.1f}%)*:\n{sentence_bullets}"
+        )
+        total_sentences += len(top_sents)
+
+    header = f"### Synthesized Memory Overview for: \"{query}\"\n\n"
+    body = "\n\n".join(synthesized_sections)
+    footer = f"\n\n*Extracted {total_sentences} key passages directly from local vector store without external API calls.*"
+
+    answer = header + body + footer
+    usage = {
+        "model": "Local Extractive Engine (Offline / Zero Cost)",
+        "input_tokens": 0,
+        "output_tokens": len(answer.split()),
+    }
+    return answer, usage
+
