@@ -1,0 +1,23 @@
+# AI Digital Memory Guardian — Python Dependencies
+# Install with: pip install -r requirements.txt
+#
+# Pinned to known-compatible versions (as of Sep 2025).
+# All packages are real, functional — no placeholders.
+
+# ── Core ML / Embedding (local, no API key required) ─────────────────────────
+sentence-transformers==3.3.1        # all-MiniLM-L6-v2 embedding model
+torch==2.4.1                        # PyTorch CPU (CPU-only install)
+transformers==4.46.3                # HuggingFace transformers
+huggingface-hub==0.26.3             # Model download/caching
+
+# ── Vector Database (persistent, on-disk) ────────────────────────────────────
+chromadb==0.5.23                    # Local ChromaDB with HNSW indexing
+
+# ── LLM API (real Claude calls) ──────────────────────────────────────────────
+anthropic==0.40.0                   # Anthropic Python SDK
+
+# ── Web UI ───────────────────────────────────────────────────────────────────
+streamlit==1.40.2                   # Streamlit web framework
+
+# ── Supporting ───────────────────────────────────────────────────────────────
+numpy==1.26.4                       # Numerical arrays (embeddings)

@@ -1,0 +1,42 @@
+Personal Journal — Aryan's Reflections
+=======================================
+
+March 12, 2025
+
+Today was a strange mix of exhaustion and clarity. I woke up feeling heavy after the product strategy meeting ran three hours over schedule yesterday. Sarah pushed back hard on the roadmap timeline, and I honestly think she's right — we've been overcommitting for the past two quarters and the team is burning out.
+
+I spent the morning doing a solo walk along the riverside trail near the office. The water was unusually high from last week's rains. I kept thinking about the conversation I had with Dad over the weekend. He said something that stuck with me: "You can't build a house on a moving foundation." I wonder if he meant the startup, or something else entirely.
+
+---
+
+March 19, 2025
+
+Had my first real breakthrough with the memory system prototype today. The embedding pipeline finally worked end-to-end after three days of debugging the ChromaDB integration. When I ran the first semantic query and saw the right chunks surface from 200 documents, I felt genuinely thrilled — not the forced enthusiasm I perform in demos, but real excitement.
+
+The team celebrated with pizza in the conference room. Marcus kept joking that I'd built "a brain for my brain." He's not wrong. The ability to surface forgotten notes from six months ago using natural language feels almost like cheating.
+
+---
+
+April 3, 2025
+
+Anxiety has been creeping back this week. The investor pitch is in 11 days and the demo environment keeps breaking in subtle ways. I've been sleeping four to five hours, surviving on coffee and adrenaline. My therapist reminded me this morning that I tend to catastrophize when I'm tired — that the actual situation is usually thirty percent as bad as my anxious brain makes it.
+
+She suggested I journal more consistently. Writing does help. When I write things out, the chaos in my head becomes legible, like converting noise into signal.
+
+---
+
+April 15, 2025
+
+The pitch went better than I expected. The lead investor, a sharp woman named Dr. Patel, asked incredibly precise questions about our retrieval latency and data privacy model. I answered honestly — including the parts where we don't have everything figured out. She seemed to appreciate that.
+
+We didn't close the round on the spot, but the follow-up call is scheduled for next week. I left the building feeling lighter than I had in months. Stopped for ramen on the way home and sat alone at the counter, just being present. It was one of those rare, quiet good moments.
+
+---
+
+May 2, 2025
+
+I've been thinking about the concept of digital memory lately — not just as a product, but philosophically. If I can retrieve any thought I've ever written down, verbatim, in under two seconds, does that change the nature of memory itself? Am I outsourcing my hippocampus?
+
+I read about the ancient Greek practice of the "Method of Loci" — mentally placing memories in physical locations to retrieve them later. What we're building is essentially a digital version of that, but at a thousand times the scale, with semantic search instead of spatial navigation.
+
+The distinction between remembering and retrieving might be more important than I initially thought.

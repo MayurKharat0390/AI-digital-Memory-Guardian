@@ -1,0 +1,71 @@
+Meeting Notes — TechNova AI
+===========================
+
+Q1 Product Strategy Meeting
+Date: February 28, 2025
+Attendees: Aryan (CEO), Sarah (CPO), Marcus (CTO), Priya (Design), Leo (Engineering Lead)
+
+AGENDA SUMMARY:
+
+1. Q1 Roadmap Review
+
+Sarah opened by presenting the current feature backlog. The semantic memory module is 60% complete. The timeline for public beta was pushed from March 15 to April 20 due to infrastructure bottlenecks. Marcus flagged that the ChromaDB cluster was hitting memory limits during large batch ingestion — a fix requires either vertical scaling or sharding the collection by user.
+
+Leo proposed an embedding cache layer to avoid redundant computation when the same document is uploaded twice. The team agreed to prototype this in the next sprint. Estimated savings: 40% reduction in GPU time during ingestion.
+
+2. User Research Findings (Priya)
+
+Priya presented findings from 12 user interviews conducted in January. Key insights:
+- Users want to search across ALL their documents (emails, notes, PDFs, journal entries) in a single query
+- Privacy is a top concern: 9 of 12 users explicitly asked whether their data leaves their device
+- The "comparison mode" feature (keyword vs. semantic) was universally praised in prototype tests — users found it educational and trust-building
+
+Action item: Add a local-only processing badge to the UI to address privacy concerns.
+
+3. Investor Relations Update
+
+The Series A pitch materials are being revised based on feedback from the pre-pitch meeting with GreenBridge Ventures. They want more detail on:
+- Retrieval accuracy benchmarks (precision@5, NDCG)
+- How we handle multi-language documents
+- Data retention and deletion policy
+
+Aryan to prepare technical appendix by March 10.
+
+4. Engineering Velocity
+
+Marcus reported that the last sprint had 82% story point completion — up from 67% in Q4 2024. The team has been more focused since the daily standups were shortened from 30 minutes to 15 minutes.
+
+Outstanding technical debt: the keyword search fallback needs a proper BM25 implementation instead of the current naive string matching. Leo agreed to ticket this for Q2.
+
+DECISIONS MADE:
+- Public beta target: April 20, 2025
+- Embedding cache: prototype in Sprint 8
+- Local-only badge: add to UI in next release
+- BM25 keyword search: scheduled for Q2
+
+NEXT MEETING: March 14, 2025
+
+---
+
+One-on-One: Aryan + Sarah
+Date: March 5, 2025
+
+Sarah expressed concern that the product is "feature creeping" — that we keep adding capabilities (voice input, PDF parsing, calendar integration) without validating whether users actually want them before the core search experience is polished.
+
+She suggested a "30-day freeze" on new features to focus entirely on search quality and latency. This is the right call. I agreed.
+
+We also talked about team morale. Sarah mentioned that two engineers feel unclear about the long-term technical direction. I need to schedule an all-hands technical vision session soon.
+
+---
+
+Design Review: Memory Visualization
+Date: March 18, 2025
+
+Priya presented three concepts for visualizing the knowledge base:
+1. Force-directed graph showing relationships between document clusters
+2. Timeline view sorted by upload/creation date
+3. Topic cloud with semantic clusters
+
+The team preferred option 1 for power users and option 2 for casual users. Priya will prototype both using D3.js. Budget approved for two weeks of design work.
+
+The graph visualization could expose latent connections between documents that even the author didn't consciously make — similar to how a detective's evidence board reveals patterns that weren't visible document-by-document.
